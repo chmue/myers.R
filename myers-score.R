@@ -16,17 +16,17 @@
 
 library("dplyr")
 
-myers <- function(age, count, na_omit = FALSE) {
+myers <- function(target, freq, na_omit = FALSE) {
   d <- data.frame(
-    age = age,
-    count = count,
-    lastdigit = age %% 10,
+    target = target,
+    freq = freq,
+    lastdigit = target %% 10,
   wgt = c(1:9, rep(10, 81), 9:0))
 
   if (na_omit) d <- na.omit(d)
 
   group_by(d, lastdigit) %>%
-    summarise(freq = sum(count * wgt)) %>%
+    summarise(freq = sum(freq * wgt)) %>%
     mutate(
       freq = freq / sum(freq),
       score = (freq * 100) - 10,
