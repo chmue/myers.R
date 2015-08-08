@@ -16,12 +16,14 @@
 
 library("dplyr")
 
-myers <- function(target, freq, na_omit = FALSE) {
-  d <- data.frame(
-    target = target,
-    freq = freq,
-    lastdigit = target %% 10,
-  wgt = c(1:9, rep(10, 81), 9:0))
+myers <- function(target, freq, bin_start, bin_size, na_omit = FALSE) {
+  d <- data.frame(target = target, freq = freq)
+  d_filter <- seq(bin_start, bin_start + bin_size + 10 - 2)
+  if (!all(d_filter %in% target)) stop("Bin setup exceeds available data.")
+  d <- d %>%
+    filter(target %in% d_filter) %>%
+    arrange(target) %>%
+    mutate(lastdigit = target %% 10, wgt = c(1:9, rep(10, bin_size - (10 - 1)), 9:1))
 
   if (na_omit) d <- na.omit(d)
 
